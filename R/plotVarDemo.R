@@ -59,16 +59,19 @@ plotVarDemo <- function(varURI, token, wsUrl = "www.opensilex.org/openSilexAPI/r
   # Labels and grid
   y <- list(title = paste('<b>', variableList[1,"name"], ' (',variableList[1,"unity"], ')' , '</b>', sep = ""), color = '#282828',
             tickfont = list(family = 'serif'), gridwidth = 2)
-  x <- list(title = '<b>Date</b>', tickfont = list(family = 'serif'), gridwidth = 2)
+  x <- list(title = '<b>Frequency</b>', tickfont = list(family = 'serif'), gridwidth = 2)
   title <- list(size = 20, color = '#282828', tickfont = list(family = 'serif'))
 
   ## Plot
+  #1 improvement would be to create only one object
+  # that is adapted from the number of variables we select
+  i=1
   p <- plotly::plot_ly()
   # Backgound creation
   p <- plotly::layout(p, xaxis = x, yaxis = y,
                       titlefont = title,
                       margin = list(l = 60, r = 70, t = 70, b =  60))
-  for (i in 1:(length(Data))){
+
     # Markers and Lines formatting
     nameY <- paste('y', i, sep = "")
     marker <- NULL
@@ -79,29 +82,49 @@ plotVarDemo <- function(varURI, token, wsUrl = "www.opensilex.org/openSilexAPI/r
     yVar <- Data[[i]]$value
 
     # Screening of the values without smoothing as lines
-    p <- plotly::add_lines(p, x = Data[[i]]$date, y = yVar, line = list(color = as.character(colorVar[i])), name = variableList[i,"method"], yaxis = nameY, hoverlabel = hoverlabel,
-                           text = ~paste(Data[[i]]$date, '<br>', variableList[i,"acronym"], ': <b>', yVar, variableList[i,"unity"], '</b>'), hoverinfo = 'text')
-    }
 
+     p <- plotly::add_histogram(p,
+                                x = yVar,
+                                line = list(color = as.character(colorVar[i])),
+                                name = variableList[i,"method"],
+                                xaxis = nameY,
+                                hoverlabel = hoverlabel )
+     p <- plotly::layout(p, title = paste('<b>Frequency of ', variableList[i,"name"], '</b><br><i>', variableList[1,"method"], '</i>' , sep = ""))
+    # 2
+     i=2
+     p2 <- plotly::plot_ly()
+     # Backgound creation
+     p2 <- plotly::layout(p, xaxis = x, yaxis = y,
+                         titlefont = title,
+                         margin = list(l = 60, r = 70, t = 70, b =  60))
 
+     # Markers and Lines formatting
+     nameY <- paste('y', i, sep = "")
+     marker <- NULL
+     marker$color <- as.character(colorVar[i])
+     hoverlabel <- list(bgcolor = colorBgHover, font = list(color = colorText), hoveron = "")
+     hoverlabel$bordercolor <- as.character(colorVar[i])
+     # Values of the graph
+     yVar <- Data[[i]]$value
+
+     # Screening of the values without smoothing as lines
+
+     p2 <- plotly::add_histogram(p2,
+                                x = yVar,
+                                line = list(color = as.character(colorVar[i])),
+                                name = variableList[i,"method"],
+                                xaxis = nameY,
+                                hoverlabel = hoverlabel )
+     p <- plotly::layout(p, title = paste('<b>Frequency of ', variableList[i,"name"], '</b><br><i>', variableList[1,"method"], '</i>' , sep = ""))
   ## Labels
   if (length(varURI) == 1){
-    p <- plotly::layout(p, title = paste('<b>Tendency of ', variableList[1,"name"], '</b><br><i>', variableList[1,"method"], '</i>' , sep = ""))
-  } else if (i == 2) {
-    y <- list(title = paste('<b>', variableList[2, "name"], ' (', variableList[2, "unity"], ')' , '</b>', sep = ""), color = '#282828', showgrid = FALSE,
-              gridwidth = 2,  tickfont = list(family = 'serif'), overlaying = "y", side = "right")
-    p <- plotly::layout(p, yaxis2 = y)
-    p <- plotly::layout(p, title = "<b>Tendency of environmental variables among time</br>")
-  } else {
-    y <- list(title = paste('<b>', variableList[2, "name"], ' (', variableList[2, "unity"], ')' , '</b>', sep = ""), color = '#282828', showgrid = FALSE,
-              gridwidth = 2,  tickfont = list(family = 'serif'), overlaying = "y", side = "right")
-    p <- plotly::layout(p, yaxis = y)
-    p <- plotly::layout(p, title = "<b>Tendency of environmental variables among time</br>")
+
   }
   p
   # Creation of the html object to screen in the variablesStudy
   # print(plotly::plotly_json(p))
   htmlwidgets::saveWidget(p, "plotWidget.html", selfcontained = FALSE)
+  htmlwidgets::saveWidget(p2, "plotWidget2.html", selfcontained = FALSE)
   # htmlwidgets::
   # jsonlite::write_json(plotly::plotly_json(p), "plotlySchema")
   # jsonlite::write_json(jsonlite::fromJSON(plotly::plotly_json(p)), "plotlyData")
