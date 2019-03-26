@@ -1,3 +1,2 @@
-# compareVariablesDemo
-
-R Application running with OpenCPU 
+# hackathonApp
+hackathon 25-03 OpenSilex 
