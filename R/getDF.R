@@ -14,6 +14,7 @@
 #' @param token a token from \code{\link{getToken}} function
 #' @param smoothing logical, smoothing of the data,  returns the incertitudes from the smoothing
 #' @param sensor character, uri of a sensor to filter with
+#' @indFilters numeric vector of individuals row number
 #' @param endDate date, date from which to filter data, format "\%Y-\%m-\%dT\%H:\%M:\%S"
 #' @param startDate date, date to which filter the data, format "\%Y-\%m-\%dT\%H:\%M:\%S"
 #'
@@ -32,7 +33,7 @@
 #' getDF(token = token, varURI = list("http://www.opensilex.org/demo/id/variables/v004",
 #'                                          "http://www.opensilex.org/demo/id/variables/v007"))
 #' }
-getDF <- function(varURI, token, smoothing = FALSE, sensor = NULL, endDate = NULL, startDate = NULL, wsUrl = "www.opensilex.org/openSilexAPI/rest/"){
+getDF <- function(varURI, indFilters , token, smoothing = FALSE, sensor = NULL, endDate = NULL, startDate = NULL, wsUrl = "www.opensilex.org/openSilexAPI/rest/"){
 
   phisWSClientR::initializeClientConnection(apiID="ws_private", url = wsUrl)
   ## Data recuperation
@@ -59,31 +60,8 @@ getDF <- function(varURI, token, smoothing = FALSE, sensor = NULL, endDate = NUL
       DataX <- DataX[which(DataX$date <= endDate),]
     }
 
-    # Chosen sensor
-    if(!is.null(sensor)){
-      if(length(grep(sensor, enviroData$sensorUri)) != 0){
-        DataX <- DataX[which(enviroData$sensorUri == sensor),]
-      }else{
-        warning("This variable is not measured by the sensor.")
-      }
-    }
+    DataX = DataX[indFilters ,  ]
 
-    ##Smoothing
-    if(smoothing == TRUE){
-      if(length(DataX$date) > 20){
-        df = 20
-      } else {
-        df <- length(DataX$date)-1
-      }
-      varSpline <- gam::gam(value~s(date, df = df), data = DataX)
-      varPred <- stats::predict(varSpline, se.fit = TRUE)
-      dist <- abs(as.numeric(DataX$value) - as.numeric(varPred$fit))
-      DataX <- cbind(DataX, dist)
-      names(DataX)[length(DataX)-1] <- paste("Value of ",variableList[which(variableList$uri == uri),"name"], sep = "")
-      names(DataX)[length(DataX)] <- paste("Distance of ",variableList[which(variableList$uri == uri),"name"], " from smoothed curve", sep = "")
-    }else{
-      names(DataX)[length(DataX)] <- paste("Value of ",variableList[which(variableList$uri == uri),"name"], sep = "")
-    }
 
     return(DataX)
   })
