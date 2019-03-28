@@ -10,12 +10,11 @@
 
 $(function() {
   // Comment for production case
-  // ocpu.seturl("http://opensilex.org:8004/ocpu/apps/OpenSILEX/compareVariablesDemo/R");
+  //ocpu.seturl("http://opensilex.org:8004/ocpu/apps/OpenSILEX/compareVariablesDemo/R");
+  ocpu.seturl("http://0.0.0.0:8004/ocpu/library/hackathonApp/R");
 
   // initialize parameters when token is valid
-  $("#loadVariable").click(function(e) {
-    initInputs();
-  });
+
 
   // show graph button
   $("#submit").click(function(e) {
@@ -23,49 +22,21 @@ $(function() {
     functionsParameters = getInputs();
     // basical
     // create a plot from htmlwidget named function name .e.g plotVar with Widget.html
-    showPlot("plotDiv", "plotVarDemo", functionsParameters);
+    showPlot("plotDiv1", "plotVarDemo", functionsParameters);
+    showPlot2("plotDiv2", "plotVarDemo", functionsParameters);
   });
 });
 
-function initInputs() {
-  initOpenSilexParameters();
-
-  var config = getConfigOpenSilexParameters();
-  // test token send in url
-  if (config.token == null || config.token == "") {
-    alert("An accessToken is required");
-    return false;
-  } 
-  if (config.wsUrl == null || config.wsUrl == "") {
-    alert("A wsUrl is required");
-    return false;
-  } 
-  
-  // variables' initialization
-  // if fail disabled input
-  setListInputFromRList("variable","variableList", config, {
-    maximumSelectionLength: 2,
-    multiple: true
-  });
-
-}
-
 function getInputs() {
-  var config = getConfigOpenSilexParameters();
 
-  // input parameters in the form of the R function
-  var varURIs = $("#variable").val();
-
-  if (varURIs == null || varURIs.length == 0) {
-    alert("you must choose at least one variable");
-    return false;
-  }
   functionsParameters = {
-    varURI: varURIs,
-    token: config.token,
+    varURI: [
+      $("#opensilex-variable1").val(),
+      $("#opensilex-variable2").val(),
+    ],
+    token: $("#opensilex-token").val(),
+    wsUrl: $("#wsUrl").val()
   };
-  if (config.wsUrl !== null) {
-    functionsParameters["wsUrl"] = config.wsUrl;
-  }
+
   return functionsParameters;
 }

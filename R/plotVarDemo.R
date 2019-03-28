@@ -94,7 +94,7 @@ plotVarDemo <- function(varURI, token, wsUrl = "www.opensilex.org/openSilexAPI/r
      i=2
      p2 <- plotly::plot_ly()
      # Backgound creation
-     p2 <- plotly::layout(p, xaxis = x, yaxis = y,
+     p2 <- plotly::layout(p2, xaxis = x, yaxis = y,
                          titlefont = title,
                          margin = list(l = 60, r = 70, t = 70, b =  60))
 
@@ -115,7 +115,7 @@ plotVarDemo <- function(varURI, token, wsUrl = "www.opensilex.org/openSilexAPI/r
                                 name = variableList[i,"method"],
                                 xaxis = nameY,
                                 hoverlabel = hoverlabel )
-     p <- plotly::layout(p, title = paste('<b>Frequency of ', variableList[i,"name"], '</b><br><i>', variableList[1,"method"], '</i>' , sep = ""))
+     p2 <- plotly::layout(p2, title = paste('<b>Frequency of ', variableList[i,"name"], '</b><br><i>', variableList[1,"method"], '</i>' , sep = ""))
   ## Labels
   if (length(varURI) == 1){
 

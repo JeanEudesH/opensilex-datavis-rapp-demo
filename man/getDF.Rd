@@ -4,7 +4,7 @@
 \alias{getDF}
 \title{getDF}
 \usage{
-getDF(varURI, token, smoothing = FALSE, sensor = NULL,
+getDF(varURI, indFilters, token, smoothing = FALSE, sensor = NULL,
   endDate = NULL, startDate = NULL,
   wsUrl = "www.opensilex.org/openSilexAPI/rest/")
 }

@@ -103,6 +103,32 @@ function showPlot(iframeInput, functionName, plotVarParameters) {
       alert("An unknown error has append : " + request.responseText);
     }));
 }
+
+/**
+ * Link a R plotly graph to a div
+ * @param {string} iframeInput div input
+ * @param {string} functionName R function name
+ * @param {object} plotVarParameters function parameters
+ */
+function showPlot2(iframeInput, functionName, plotVarParameters) {
+  $("#cssLoader").addClass("is-active");
+  // Run the R function
+  return (req = ocpu
+    .call(functionName, plotVarParameters, function(session) {
+      $("#" + iframeInput).attr(
+        "src",
+        session.getFileURL("plotWidget2.html")
+      );
+      $("#submit").removeAttr("disabled");
+      $("#cssLoader").removeClass("is-active");
+    }).fail(function(request) {
+      $("#submit").removeAttr("disabled");
+      $("#cssLoader").removeClass("is-active");
+      alert("An unknown error has append : " + request.responseText);
+    }));
+}
+
+
 /**
  * 
  * @param {string} inputId html input tag id
